@@ -2,6 +2,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from myapp.models import Users
+from myapp.models import Tournaments
 
 def home(request):
 	return render(request, "home.html")
@@ -87,5 +88,59 @@ def get_all_users_statistics(request):
 #MATCHES MANAGEMENT
 
 #TOURNAMENTS MANAGEMENT
+
+def create_tournament(request):
+    if request.method == 'POST':
+        creator_id = request.POST.get('creator_id')
+
+        tournament = Tournaments.objects.create(creator_id=creator_id)
+
+        return JsonResponse({'message': 'Tournament created successfully', 'tournament_id': tournament.id}, status=201)
+    else:
+        return HttpResponse('Method not allowed', status=405)
+
+def start_tournament(request, tournamentId):
+    tournament = get_object_or_404(Tournaments, pk=tournamentId)
+
+    if request.method == 'PATCH':
+        tournament.has_started = True
+        tournament.save()
+
+        return HttpResponse('Tournament started successfully')
+    else:
+        return HttpResponse('Method not allowed', status=405)
+
+def finish_tournament(request, tournamentId):
+    tournament = get_object_or_404(Tournaments, pk=tournamentId)
+
+    if request.method == 'PATCH':
+        tournament.has_finished = True
+        tournament.save()
+
+        return HttpResponse('Tournament finished successfully')
+    else:
+        return HttpResponse('Method not allowed', status=405)
+
+def get_tournament(request, tournamentId):
+    tournament = get_object_or_404(Tournaments, pk=tournamentId)
+
+    if request.method == 'GET':
+        data = {
+            'id': tournament.id,
+            'creator_id': tournament.creator_id,
+            'has_started': tournament.has_started,
+            'has_finished': tournament.has_finished
+        }
+        return JsonResponse(data)
+    else:
+        return HttpResponse('Method not allowed', status=405)
+
+def get_user_tournaments(request, userId):
+    if request.method == 'GET':
+        tournaments = Tournaments.objects.filter(creator_id=userId)
+        tournament_data = [{'id': tournament.id, 'has_started': tournament.has_started, 'has_finished': tournament.has_finished} for tournament in tournaments]
+        return JsonResponse({'tournaments': tournament_data}, safe=False)
+    else:
+        return HttpResponse('Method not allowed', status=405)
 
 #CHAT MANAGEMENT
