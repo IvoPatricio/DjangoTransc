@@ -1,17 +1,12 @@
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
-from ..models import Users
+from myapp.models import Users
 
 def home(request):
 	return render(request, "home.html")
 
-
 #USER MANAGEMENT
-
-from django.http import HttpResponse, JsonResponse
-from django.shortcuts import get_object_or_404
-from .models import Users
 
 def create_user(request):
     if request.method == 'POST':
@@ -33,9 +28,8 @@ def update_user(request, userid):
         username = request.POST.get('nickname')
         avatar = request.FILES.get('avatar')
 
-        # Update user fields
-        user.username = username or user.username
-        user.avatar = avatar or user.avatar
+        user.username = username if username is not None else user.username
+        user.avatar = avatar if avatar is not None else user.avatar
         user.save()
 
         return HttpResponse('User updated successfully', status=200)
@@ -47,15 +41,14 @@ def user_sign_in(request):
         email = request.POST.get('email')
         password = request.POST.get('password')
 
-        # Perform authentication logic here
-        # For simplicity, let's assume it's successful
+        # Logic
         return HttpResponse('Sign in successful', status=200)
     else:
         return HttpResponse('Method not allowed', status=405)
 
 def refresh_token(request):
     if request.method == 'POST':
-        # Logic to refresh token (if using JWT)
+        # Logic
         return HttpResponse('Token refreshed', status=200)
     else:
         return HttpResponse('Method not allowed', status=405)
