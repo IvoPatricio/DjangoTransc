@@ -1,0 +1,16 @@
+Create an APP
+python3 manage.py startapp <name>
+Update it in the settings (installed applications)
+We can have apps for anything like, authentications, for users, that allow us to view a different part of the website, etc..
+
+
+Update database
+python3 manage.py makemigrations
+python3 manage.py migrate
+
+Run the Server
+python3 manage.py runserver
+
+POST (Create):
+PATCH (Update):
+GET (Retrieve):
